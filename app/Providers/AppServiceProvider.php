@@ -38,6 +38,9 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind('App\Http\Controllers\version1\Interfaces\POC\CategoryInterface','App\Http\Controllers\version1\Repositories\POC\CategoryRepository');
 
+        $this->app->bind('App\Http\Controllers\version1\Interfaces\Member\MemberInterface','App\Http\Controllers\version1\Repositories\Member\MemberRepository');
+
+
     }
 
     /**

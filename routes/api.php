@@ -89,10 +89,10 @@ Route::group(['middleware' => ['cors', 'json.response']], function () {
 
     // include_once('Person/personApi.php');
     include_once('v1/person.php');
-    include_once('v1/user.php');
     include_once('v1/common.php');
-    
- 
+    include_once('v1/member.php');
+
+
 });
 
 Route::middleware('auth:api')
@@ -103,7 +103,7 @@ Route::middleware('auth:api')
         Route::post('/logout', 'App\Http\Controllers\Auth\ApiAuthController@logout')->name('logout.api');
 
 
-        include_once('v1/organization.php');        
+        include_once('v1/organization.php');
         include_once('v1/HRM/Masters/hrmMasterApi.php');
         include_once('v1/HRM/Transaction/hrmTransactionApi.php');
 
