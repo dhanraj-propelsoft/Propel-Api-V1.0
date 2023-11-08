@@ -23,7 +23,7 @@ class MemberController extends Controller
      */
     public function index()
     {
-       
+
     }
 
     /**
@@ -99,14 +99,14 @@ class MemberController extends Controller
         return $response;
     }
     public function setPasswordForMember(Request $request)
-    {        
+    {
         Log::info('MemberController > setPasswordForMember function Inside.' . json_encode($request->all()));
         $response = $this->MemberService->setPasswordForMember($request->all());
         Log::info('MemberController > setPasswordForMember function Return.' . json_encode($response));
         return $response;
     }
     public function passwordUpdateForMember(Request $request)
-    {        
+    {
         Log::info('MemberController > passwordUpdateForMember function Inside.' . json_encode($request->all()));
         $response = $this->MemberService->passwordUpdateForMember($request->all());
         Log::info('MemberController > passwordUpdateForMember function Return.' . json_encode($response));
@@ -117,6 +117,13 @@ class MemberController extends Controller
         Log::info('MemberController > memberLogin function Inside.' . json_encode($request->all()));
         $response = $this->MemberService->memberLogin($request->all());
         Log::info('MemberController > memberLogin function Return.' . json_encode($response));
+        return $response;
+    }
+    public function memberCreation(Request $request)
+    {
+        Log::info('MemberController > memberCreation function Inside.' . json_encode($request->all()));
+        $response = $this->MemberService->memberCreation($request->all());
+        Log::info('MemberController > memberCreation function Return.' . json_encode($response));
         return $response;
     }
 }

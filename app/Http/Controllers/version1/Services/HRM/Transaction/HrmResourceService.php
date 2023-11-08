@@ -8,15 +8,13 @@ use App\Http\Controllers\version1\Interfaces\Hrm\Master\HrmDesignationInterface;
 use App\Http\Controllers\version1\Interfaces\Hrm\Master\HrmHumanResourceTypeInterface;
 use App\Http\Controllers\version1\Interfaces\Hrm\Transaction\HrmResourceInterface;
 use App\Http\Controllers\version1\Interfaces\Person\PersonInterface;
-use App\Http\Controllers\version1\Interfaces\User\UserInterface;
 use App\Http\Controllers\version1\Services\Common\CommonService;
 use App\Http\Controllers\version1\Services\Person\PersonService;
 use App\Models\HrmResource;
 use App\Models\HrmResourceDesignation;
-use App\Models\HrmResourceSr; 
+use App\Models\HrmResourceSr;
 use App\Models\HrmResourceSrAffinity;
 use App\Models\HrmResourceTypeAffinity;
-use App\Models\Organization\UserOrganizationRelational;
 use App\Models\PersonEmail;
 use App\Models\PersonMobile;
 use Illuminate\Support\Facades\Log;
@@ -29,11 +27,10 @@ use Illuminate\Support\Facades\Validator;
 class HrmResourceService
 {
 
-    public function __construct(PersonService $personService, PersonInterface $personInterface, UserInterface $userInterface, HrmResourceInterface $hrmResourceInterface, CommonService $commonService, commonInterface $commonInterface, HrmDepartmentInterface $hrmDeptInterface, HrmDesignationInterface $hrmDesInterface, HrmHumanResourceTypeInterface $hrmResourceTypeInterface)
+    public function __construct(PersonService $personService, PersonInterface $personInterface,  HrmResourceInterface $hrmResourceInterface, CommonService $commonService, commonInterface $commonInterface, HrmDepartmentInterface $hrmDeptInterface, HrmDesignationInterface $hrmDesInterface, HrmHumanResourceTypeInterface $hrmResourceTypeInterface)
     {
         $this->personService = $personService;
         $this->personInterface = $personInterface;
-        $this->userInterface = $userInterface;
         $this->hrmResourceInterface = $hrmResourceInterface;
         $this->commonService = $commonService;
         $this->commonInterface = $commonInterface;
@@ -48,7 +45,7 @@ class HrmResourceService
 
         $dbConnection = $this->commonService->getOrganizationDatabaseByOrgId($orgId);
         $resources = $this->hrmResourceInterface->findAll();
-     
+
 
         $resourceDetails = $resources->map(function ($resource) {
 
@@ -59,7 +56,7 @@ class HrmResourceService
             $department = $resource->resourceDesignation->ParentHrmDesignation->department->department_name;
             $designation = $resource->resourceDesignation->ParentHrmDesignation->designation_name;
             $resourceStatus = isset($resource->resourceSr->active_status_id) ? $resource->resourceSr->active_status_id : null;
-            
+
 
             return [
                 'designation' => $designation,
@@ -79,7 +76,7 @@ class HrmResourceService
         $mobile = $datas->mobileNo;
         $email = $datas->email;
         $checkPerson = $this->personInterface->findExactPersonWithEmailAndMobile($email, $mobile);
-      
+
 
         /*Some Important Types credential Type Start */
         /* 1.get All Person */
@@ -87,21 +84,21 @@ class HrmResourceService
         /* 3.Person Email Only */
         /* 4.Resource True */
         /* 5.Resource false */
-        /* 6.SameOrganizationUser/employee*/
-        /* 7. NotInSameOrganizationUser */
+        /* 6.SameOrganizationMember/employee*/
+        /* 7. NotInSameOrganizationMember */
 
         /*Some Important Types credential Type End */
         if ($checkPerson) {
-          
+
             $uid = $checkPerson->uid;
-            $checkUserWithUid = $this->personInterface->checkUserByuid($uid);
-            if ($checkUserWithUid) {
-                $userWithInOrganization = $this->hrmResourceInterface->findResourceByUid($uid);
-                if ($userWithInOrganization) {
-                    $results = ['type' => 6, 'status' => "SameOrganizationUser", 'data' => ""];
+            $checkMemberWithUid = $this->personInterface->checkMemberByUid($uid);
+            if ($checkMemberWithUid) {
+                $memberWithInOrganization = $this->hrmResourceInterface->findResourceByUid($uid);
+                if ($memberWithInOrganization) {
+                    $results = ['type' => 6, 'status' => "SameOrganizationMember", 'data' => ""];
                 } else {
-                    $getUserName = $this->personInterface->getPersonDatasByUid($uid);
-                    $results = ['type' => 7, 'data' => $getUserName, 'mobile' => $checkUserWithUid];
+                    $getMemberName = $this->personInterface->getPersonDatasByUid($uid);
+                    $results = ['type' => 7, 'data' => $getMemberName, 'mobile' => $checkMemberWithUid];
                 }
                 return $this->commonService->sendResponse($results, '');
             } else {
@@ -172,7 +169,7 @@ class HrmResourceService
     public function save($datas, $orgId)
     {
         $dbConnection = $this->commonService->getOrganizationDatabaseByOrgId($orgId);
-      
+
         $orgdatas = (object) $datas;
         $personModelresponse = $this->personService->storePerson($datas, 'resource');
 
@@ -197,9 +194,7 @@ class HrmResourceService
             $convertToResourceServiceDetails = $this->convertToResourceServiceDetails($orgdatas);
             Log::info('HrmResourceService > convertToResourceServiceDetails.' . json_encode($convertToResourceServiceDetails));
 
-            $convertToUserAccountModel = $this->convertToUserAccountModel($orgId);
-            Log::info('HrmResourceService > convertToUserAccountModel.' . json_encode($convertToUserAccountModel));
- 
+
 
             $allModels = [
                 'resourceModel' => $convertToResourceModel,
@@ -207,11 +202,11 @@ class HrmResourceService
                  'resourceDesignModel' => $convertToResourceDesignationModel,
                 'resourceServiceModel' => $convertToResourceService,
                 'ResourceServiceDetailsModel' => $convertToResourceServiceDetails,
-                'userAccountModel' => $convertToUserAccountModel,
+
             ];
 
             $saveResourceModel = $this->hrmResourceInterface->saveResource($allModels);
-           
+
 
             log::info('saveResource ' . json_encode($saveResourceModel));
             return $this->commonService->sendResponse($saveResourceModel, '');
@@ -261,12 +256,7 @@ class HrmResourceService
         log::info('hrmResourceService   HrmResourceSr ' . json_encode($model->date_of_joining));
         return $model;
     }
-    public function convertToUserAccountModel($orgId)
-    {
-        $model = new UserOrganizationRelational();
-        $model->organization_id = $orgId;
-        return $model;
-    }
+
     public function resourceMobileOtp($uid, $orgId)
     {
         log::info('hrmResourceService   otp ' . json_encode($uid));

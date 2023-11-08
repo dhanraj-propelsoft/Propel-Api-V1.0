@@ -13,7 +13,6 @@ use App\Models\Organization\OrganizationEmail;
 use App\Models\Organization\OrganizationOwnership;
 use App\Models\Organization\OrganizationStructure;
 use App\Models\Organization\OrganizationWebAddress;
-use App\Models\Organization\UserOrganizationRelational;
 use App\Models\PropertyAddress;
 use App\Models\TempOrganization;
 use Illuminate\Support\Facades\Config;
@@ -70,7 +69,6 @@ class OrganizationService
             $generateOrganizationCategoryIdModel = $this->convertOrganizationCategoryModel($orgDetails, $orgId);
             $generateOrganizationStructureIdModel = $this->convertOrganizationStructureModel($orgDetails, $orgId);
             $model = $this->organizationInterface->dynamicOrganizationData($generateOrganizationDocumentModel, $generateOrganizationOwnerShipIdModel, $generateOrganizationCategoryIdModel, $generateOrganizationStructureIdModel);
-            // $generateUserAccountModel = $this->convertToUserAccountModel($datas);
             Config::set('database.connections.mysql.database', $preDatabase);
             DB::purge('mysql');
             DB::reconnect('mysql');
@@ -137,12 +135,7 @@ class OrganizationService
         $model->pfm_active_status_id = "1";
         return $model;
     }
-    public function convertToUserAccountModel($datas)
-    {
-        $model = new UserOrganizationRelational();
-        $model->uid = $datas->tried_person_id;
-        return $model;
-    }
+
     public function getDataBaseNameByid($orgId)
     {
         $datas = (object) $datas;
@@ -215,7 +208,6 @@ class OrganizationService
             $model->default_org = 0;
             $model->save();
         }
-        $setOrganization = UserOrganizationRelational::where(['organization_id' => $datas->orgId, 'uid' => $datas->uid])->update(['default_org' => 1]);
         return $this->commonService->sendResponse($datas, '');
     }
     public function tempOrganizationStore($datas)
@@ -273,6 +265,7 @@ class OrganizationService
     {
         $uid = auth()->user()->uid;
 
+
         $orgDetail = [];
         $orgName = ($datas->orgName) ? $datas->orgName : null;
         $orgEmail = ($datas->orgEmail) ? $datas->orgEmail : null;
@@ -318,7 +311,7 @@ class OrganizationService
         }
         if (isset($datas->tempOrgId)) {
             $model = $this->organizationInterface->getTempOrganizationDataByTempId($datas->tempOrgId);
-          
+
         } else {
             $model = new TempOrganization();
         }
@@ -332,6 +325,7 @@ class OrganizationService
     }
     public function organizationMasterDatas()
     {
+        $uid = auth()->member()->uid;
         $state = $this->commonService->getAllStates();
         $orgStructure = $this->organizationInterface->pimsOrganizationStructure();
         $orgCategory = $this->organizationInterface->pimsOrganizationCategory();

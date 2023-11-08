@@ -11,7 +11,7 @@ class MemberRepository implements MemberInterface
 {
     public function storeMember($model)
     {
-        
+
         try {
             $result = DB::transaction(function () use ($model) {
 
@@ -42,5 +42,9 @@ class MemberRepository implements MemberInterface
         ->orWhere('primary_mobile', $datas->memberName)
         ->first();
 
+    }
+    public function findMemberByMobileNo($mobileNo)
+    {
+       return Member::with('personDetails')->where('primary_mobile', $mobileNo)->first();
     }
 }

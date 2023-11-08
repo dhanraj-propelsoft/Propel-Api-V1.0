@@ -78,18 +78,15 @@ class HrmResourceRepository implements HrmResourceInterface
                 $resourceDesignModel = $allModels['resourceDesignModel'];
                 $resourceServiceModel = $allModels['resourceServiceModel'];
                 $resourceServiceDetailsModel = $allModels['ResourceServiceDetailsModel'];
-                $userAccountModel = $allModels['userAccountModel'];
 
                 $resourceModel->save();
 
                 $resourceTypeDetailModel->ParentHrmResource()->associate($resourceModel, 'resource_id', 'id');
                  $resourceDesignModel->ParentHrmResource()->associate($resourceModel, 'resource_id', 'id');
                 $resourceServiceModel->ParentHrmResource()->associate($resourceModel, 'resource_id', 'id');
-                $userAccountModel->ParentPerson()->associate($resourceModel, 'uid', 'uid');
                 $resourceTypeDetailModel->save();
                  $resourceDesignModel->save();
                 $resourceServiceModel->save();
-                $userAccountModel->save();
                 $resourceServiceDetailsModel->ParentHrmResourceService()->associate($resourceServiceModel, 'resource_sr_id', 'id');
                 $resourceServiceDetailsModel->save();
 
@@ -103,7 +100,7 @@ class HrmResourceRepository implements HrmResourceInterface
             return $result;
         } catch (\Exception $e) {
 
-            
+
             return [
 
                 'message' => "failed",

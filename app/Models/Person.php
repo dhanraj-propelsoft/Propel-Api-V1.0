@@ -30,9 +30,9 @@ class Person extends Model
     {
         return $this->hasOne(personAnniversary::class,'uid','uid');
     }
-    public function existUser()
+    public function existMember()
     {
-        return $this->hasOne(User::class,'uid','uid');
+        return $this->hasOne(Member::class,'uid','uid');
     }
     public function profilePic()
     {

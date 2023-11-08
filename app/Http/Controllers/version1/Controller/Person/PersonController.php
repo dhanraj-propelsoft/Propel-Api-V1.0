@@ -5,7 +5,6 @@ namespace App\Http\Controllers\version1\Controller\Person;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\version1\Services\Common\commonService;
 use App\Http\Controllers\version1\Services\Person\PersonService;
-use App\Http\Controllers\version1\Services\User\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
@@ -13,11 +12,10 @@ use Illuminate\Support\Facades\Auth;
 class PersonController extends Controller
 {
     protected $personService;
-    public function __construct(PersonService $service, CommonService $commonService, UserService $UserService)
+    public function __construct(PersonService $service, CommonService $commonService)
     {
         $this->personService = $service;
         $this->commonService = $commonService;
-        $this->userService = $UserService;
     }
 
     public function findMobileNumber(Request $request)
@@ -50,7 +48,7 @@ class PersonController extends Controller
     }
     public function getSalutation(Request $request)
     {
-      
+
 
         Log::info('PersonController > getSalutation function Inside.');
         $response = $this->commonService->getSalutation();
@@ -86,7 +84,7 @@ class PersonController extends Controller
     }
     public function getDetailedAllPerson(Request $request)
     {
-       
+
         Log::info('PersonController > getDetailedAllPerson function Inside.' . json_encode($request->all()));
         $response = $this->personService->getDetailedAllPerson($request->all());
         Log::info('PersonController > getDetailedAllPerson function Return.' . json_encode($response));
@@ -106,11 +104,11 @@ class PersonController extends Controller
         Log::info('PersonController > personMobileOtp function Return.' . json_encode($response));
         return $response;
     }
-    public function checkUserOrPerson(Request $request)
+    public function checkMemberOrPerson(Request $request)
     {
-        Log::info('PersonController > checkUserOrPerson function Inside.' . json_encode($request->all()));
-        $response = $this->personService->checkUserOrPerson($request->all());
-        Log::info('PersonController > checkUserOrPerson function Return.' . json_encode($response));
+        Log::info('PersonController > checkMemberOrPerson function Inside.' . json_encode($request->all()));
+        $response = $this->personService->checkMemberOrPerson($request->all());
+        Log::info('PersonController > checkMemberOrPerson function Return.' . json_encode($response));
         return $response;
     }
 
@@ -129,14 +127,6 @@ class PersonController extends Controller
         Log::info('PersonController > emailOtpValidation function Return.' . json_encode($response));
         return $response;
     }
-
-    public function changePassword(Request $request)
-    {
-        Log::info('PersonController > changePassword function Inside.' . json_encode($request->all()));
-        $response = $this->userService->changePassword($request->all());
-        Log::info('PersonController > changePassword function Return.' . json_encode($response));
-        return $response;
-    }
     public function personDatas(Request $request)
     {
         Log::info('PersonController > personDatas function Inside.' . json_encode($request->all()));
@@ -152,27 +142,21 @@ class PersonController extends Controller
         Log::info('PersonController > personUpdate function Return.' . json_encode($response));
         return $response;
     }
-    public function personToUser(Request $request)
+    public function personToMember(Request $request)
     {
-        Log::info('PersonController > personToUser function Inside.' . json_encode($request->all()));
-        $response = $this->personService->personToUser($request->all());
-        Log::info('PersonController > personToUser function Return.' . json_encode($response));
+        Log::info('PersonController > personToMember function Inside.' . json_encode($request->all()));
+        $response = $this->personService->personToMember($request->all());
+        Log::info('PersonController > personToMember function Return.' . json_encode($response));
         return $response;
     }
-    public function userProfileDatas(Request $request)
+    public function MemberProfileDatas(Request $request)
     {
-        Log::info('PersonController > userProfileDatas function Inside.' . json_encode($request->all()));
-        $response = $this->personService->userProfileDatas($request->all());
-        Log::info('PersonController > userProfileDatas function Return.' . json_encode($response));
+        Log::info('PersonController > MemberProfileDatas function Inside.' . json_encode($request->all()));
+        $response = $this->personService->MemberProfileDatas($request->all());
+        Log::info('PersonController > MemberProfileDatas function Return.' . json_encode($response));
         return $response;
     }
-    public function userCreation(Request $request)
-    {
-        Log::info('PersonController > userCreation function Inside.' . json_encode($request->all()));
-        $response = $this->userService->userCreation($request->all());
-        Log::info('PersonController > userCreation function Return.' . json_encode($response));
-        return $response;
-    }
+
     public function personProfiles(Request $request)
     {
         Log::info('PersonController > personProfiles function Inside.' . json_encode($request->all()));

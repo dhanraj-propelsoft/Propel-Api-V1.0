@@ -105,9 +105,9 @@ class MemberService
         $member = $this->MemberInterface->findMemberDataByUid($datas->uid);
         Log::info('MemberService > passwordUpdateForMember function Return.' . json_encode($member));
         if (Hash::check($datas->oldPassword, $member->password)) {
-                $password = Hash::make($datas->password);
-                $member->password = $password;
-                $model = $this->MemberInterface->storeMember($member);
+            $password = Hash::make($datas->password);
+            $member->password = $password;
+            $model = $this->MemberInterface->storeMember($member);
         } else {
             $model = ['message' => 'Failed', 'status' => 'old Password MisMatched'];
         }
@@ -147,5 +147,36 @@ class MemberService
             $response = ["message" => 'Member does not exist'];
             return response($response, 422);
         }
+    }
+    public function memberCreation($datas)
+    {
+
+        Log::info('MemberService > memberCreation function Inside.' . json_encode($datas));
+        $datas = (object) $datas;
+        $mobile = $this->personInterface->getPrimaryMobileNumberByUid($datas->uid);
+        $email = $this->personInterface->getPersonEmailByUid($datas->uid);
+        $getPersonName = $this->personInterface->getPersonDatasByUid($datas->uid);
+        $createMember = $this->memberCreate($mobile->mobile_no, $email->email, $datas);
+        $saveMember = $this->MemberInterface->storeMember($createMember);
+        $result = ['personName' => $getPersonName->first_name, 'mobileNumber' => $mobile->mobile_no];
+        Log::info('MemberService > memberCreation function Return.' . json_encode($result));
+        return $this->commonService->sendResponse($result, '');
+    }
+    public function memberCreate($mobile, $email, $datas)
+    {
+        Log::info('MemberService > MemberCreate function Inside.' . json_encode($datas));
+        $model = $this->MemberInterface->findMemberDataByUid($datas->uid);
+        if ($model) {
+            $model->uid = $datas->uid;
+        } else {
+            $model = new Member();
+            $model->uid = $datas->uid;
+        }
+        $model->primary_email = $email;
+        $model->primary_mobile = $mobile;
+        $model->password = Hash::make($datas->password);
+        $model->pfm_stage_id = 1;
+        Log::info('MemberService > MemberCreate function Return.' . json_encode($model));
+        return $model;
     }
 }

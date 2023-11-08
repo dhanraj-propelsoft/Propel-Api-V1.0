@@ -15,7 +15,7 @@ use App\Models\PropertyAddress;
 use App\Models\TempEmail;
 use App\Models\TempMobile;
 use App\Models\TempPerson;
-use App\Models\User;
+use App\Models\Member;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
@@ -195,9 +195,9 @@ class PersonRepository implements PersonInterface
         $data = ($model)
             ? ['Message' => 'MobileNumber is Deleted']
             : ['Message' => 'MobileNumber Not Found'];
-        
+
         return $data;
-        
+
     }
     public function deletedPersonEmailByUid($email, $uid)
     {
@@ -205,9 +205,9 @@ class PersonRepository implements PersonInterface
         $data = ($model)
             ? ['Message' => 'Email is Deleted']
             : ['Message' => 'Email Not Found'];
-        
+
         return $data;
-        
+
     }
     public function getPersonPrimaryDataByUid($uid)
     {
@@ -283,33 +283,33 @@ class PersonRepository implements PersonInterface
     }
     public function getPersonDataByMobileNo($mobile)
     {
-        return Person::with('mobile', 'existUser')
+        return Person::with('mobile', 'existMember')
         ->whereHas('mobile', function ($query) use ($mobile) {
             $query->whereIn('mobile_cachet_id', [1, 2])
                 ->where('mobile_no', $mobile);
         })
-        ->whereHas('existUser', function ($query) use ($mobile) {
+        ->whereHas('existMember', function ($query) use ($mobile) {
             $query->where('primary_mobile', '!=', $mobile);
         })
         ->first();
-    
+
     }
     public function getPersonDataByEmail($email)
     {
-        return Person::with('email', 'existUser')
+        return Person::with('email', 'existMember')
         ->whereHas('email', function ($query) use ($email) {
             $query->whereIn('email_cachet_id', [1, 2])
                 ->where('email', $email);
         })
-        ->whereHas('existUser', function ($query) use ($email) {
+        ->whereHas('existMember', function ($query) use ($email) {
             $query->where('primary_email', '!=', $email);
         })
         ->first();
-    
+
     }
     public function getDetailedAllPersonDataWithEmailAndMobile($email, $mobile)
     {
-      
+
         $mobile = Person::with('mobile')
             ->whereHas('mobile', function ($query) use ($mobile) {
                 $query->whereIn('mobile_cachet_id', [1, 2])
@@ -326,10 +326,10 @@ class PersonRepository implements PersonInterface
             ->first();
         $mobileUid = $mobile?->uid;
         $emailUid = $email?->uid;
-       
+
         return [
-            'mobile' => $mobileUid && !User::where('uid', $mobileUid)->exists() ? $this->personDataMapped($mobileUid) : null,
-            'email' => $emailUid && !User::where('uid', $emailUid)->exists() ? $this->personDataMapped($emailUid) : null,
+            'mobile' => $mobileUid && !Member::where('uid', $mobileUid)->exists() ? $this->personDataMapped($mobileUid) : null,
+            'email' => $emailUid && !Member::where('uid', $emailUid)->exists() ? $this->personDataMapped($emailUid) : null,
         ];
     }
     public function personDataMapped($uid)
@@ -343,16 +343,16 @@ class PersonRepository implements PersonInterface
             ->get();
 
     }
-    public function checkUserByUID($uid)
+    public function checkMemberByUid($uid)
     {
-        return User::where('uid', $uid)->first();
+        return Member::where('uid', $uid)->first();
     }
     public function personAddressByuid($uid)
     {
         return  PropertyAddress::with('ParentAddress')
             ->where('uid', $uid)
             ->get();
-        
+
     }
     public function personSecondMobileAndEmailByUid($uid)
     {
@@ -366,7 +366,7 @@ class PersonRepository implements PersonInterface
     {
         return PersonMobile::where(['mobile_no' => $mobile, ['mobile_cachet_id', '=', '1']])->first();
     }
-    public function getAllDatasInUser($uid)
+    public function getAllDatasInMember($uid)
     {
         return Person::with('personDetails', 'email', 'mobile', 'profilePic', 'personDetails.gender', 'personDetails.bloodGroup', 'personAddress', 'personAddress.ParentComAddress', 'personEducation', 'personProfession', 'personLanguage')->where('uid', $uid)->first();
     }
@@ -388,7 +388,7 @@ class PersonRepository implements PersonInterface
             ['uid' => $uid, 'mobile_cachet_id' => 1],
             ['mobile_cachet_id' => 2]
         );
-        
+
     }
     public function getPerviousPrimaryEmail($uid)
     {
@@ -397,7 +397,7 @@ class PersonRepository implements PersonInterface
             ['email_cachet_id' => 2]
         );
     }
-    public function addSecondaryMobileNoForUser($model)
+    public function addSecondaryMobileNoForMember($model)
     {
         try {
             $result = DB::transaction(function () use ($model) {
@@ -416,7 +416,7 @@ class PersonRepository implements PersonInterface
             ];
         }
     }
-    public function addSecondaryEmailForUser($model)
+    public function addSecondaryEmailForMember($model)
     {
         try {
             $result = DB::transaction(function () use ($model) {
@@ -463,7 +463,7 @@ class PersonRepository implements PersonInterface
     {
         return TempEmail::where('id', $id)->delete();
     }
-   
+
     public function storeTempEmail($model)
     {
         try {
@@ -534,7 +534,7 @@ class PersonRepository implements PersonInterface
         ->first();
 
     }
-    public function getPersonPicAndPersonName($uid) 
+    public function getPersonPicAndPersonName($uid)
     {
         return personDetails::with('PersonPic')->where('uid', $uid)->first();
     }
@@ -543,9 +543,9 @@ class PersonRepository implements PersonInterface
         return person::where(['uid' => $uid, 'pfm_existence_id' => 1])->first();
 
     }
-    public function setStageInUser($uid)
+    public function setStageInMember($uid)
     {
-        return User::where('uid', $uid)->update(['pfm_stage_id' => 2]);
+        return Member::where('uid', $uid)->update(['pfm_stage_id' => 2]);
     }
     public function resendOtpForSecondaryMobileNo($uid,$mobile,$otp)
     {

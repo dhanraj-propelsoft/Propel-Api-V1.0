@@ -12,13 +12,10 @@ class UserRepository implements UserInterface
 
     public function findUserByMobileNo($mobileNo)
     {
-      
        return User::with('personDetails')->where('primary_mobile', $mobileNo)->first();
-  
-
     }
 
-   
+
     public function findUserDataByEmail($email)
     {
         return User::where('primary_email', $email)->first();
