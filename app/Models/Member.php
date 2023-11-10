@@ -10,4 +10,9 @@ use Illuminate\Foundation\Auth\Member as Authenticatable;
 class Member extends Authenticatable
 {
     use HasFactory,HasApiTokens;
+
+    public function personDetails()
+    {
+        return $this->hasOne(PersonDetails::class,'uid','uid');
+    }
 }
