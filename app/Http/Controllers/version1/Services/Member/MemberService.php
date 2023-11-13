@@ -137,11 +137,11 @@ class MemberService
                 $personStatus = $this->personInterface->checkPersonExistence($uid);
                 $personType = $personStatus ? $personStatus->existence : null;
                 $defaultOrg = $this->OrganizationInterface->getPerviousDefaultOrganization($uid);
-                $response = ['personType' => $personType, 'token' => $token, 'uid' => $uid, 'defaultOrg' => $defaultOrg, 'nickName' => $nickName, 'firstName' => $firstName, 'personPic' => $personPic];
-                return $this->commonService->sendResponse($response, "");
+                $response = ['type' =>1, 'personType' => $personType, 'token' => $token, 'uid' => $uid, 'defaultOrg' => $defaultOrg, 'nickName' => $nickName, 'firstName' => $firstName, 'personPic' => $personPic];
+                return $this->commonService->sendResponse($response, "Login Successfully");
             } else {
-                $response = ["message" => "Password mismatch", 'firstName' => $firstName, 'uid' => $uid];
-                return response($response, 422);
+                $response = ['type' =>2, 'firstName' => $firstName, 'uid' => $uid];
+                return $this->commonService->sendError($response, "Password Invalid");
             }
         } else {
             $response = ["message" => 'Member does not exist'];
