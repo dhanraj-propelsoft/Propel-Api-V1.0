@@ -126,4 +126,11 @@ class MemberController extends Controller
         Log::info('MemberController > memberCreation function Return.' . json_encode($response));
         return $response;
     }
+    public function memberLogout()
+    {
+        Log::info('MemberController > memberLogout function Inside.' . json_encode($request->all()));
+        $response = $this->MemberService->memberLogout();
+        Log::info('MemberController > memberLogout function Return.' . json_encode($response));
+        return $response;
+    }
 }

@@ -179,4 +179,11 @@ class MemberService
         Log::info('MemberService > MemberCreate function Return.' . json_encode($model));
         return $model;
     }
+    public function memberLogout()
+    {
+        $token = auth()->user()->token();
+        $token->revoke();
+        $result = ['type'=>1,'message' => ' Logged Out Successfully!'];
+        return $this->commonService->sendResponse($result, '');
+    }
 }

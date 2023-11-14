@@ -7,5 +7,6 @@ use App\Http\Controllers\version1\Controller\Member\MemberController;
  Route::post('passwordUpdateForMember', [MemberController::class,'passwordUpdateForMember'])->name('passwordUpdateForMember');
  Route::post('memberLogin', [MemberController::class,'memberLogin'])->name('memberLogin');
  Route::post('memberCreation', [MemberController::class,'memberCreation'])->name('memberCreation');
+ Route::get('memberLogout', [MemberController::class,'memberLogout'])->name('memberLogout');
 
 

@@ -100,7 +100,7 @@ Route::middleware('auth:api')
     ->group(function () {
 
         Route::post('/get_user_data', 'App\Http\Controllers\version1\Controller\User\UserController@get_user_data')->name('get_user_data');
-        Route::post('/logout', 'App\Http\Controllers\Auth\ApiAuthController@logout')->name('logout.api');
+        // Route::post('/logout', 'App\Http\Controllers\Auth\ApiAuthController@logout')->name('logout.api');
 
 
         include_once('v1/organization.php');
